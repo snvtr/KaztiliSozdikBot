@@ -58,7 +58,7 @@ def lookup(in_str):
     out_str_k = ''
     for key in W.keys():
         if in_str in W[key]['meaning']:
-            out_str_k += 'каз.: ' + key + '\n'
+            out_str_k += 'каз.: ' + key + ' (' + str(W[key]['meaning']).replace("'",'') + ')\n'
     if out_str_k == '':
         out_str_k = 'каз.: не найдено\n'
     return out_str_r + out_str_k
