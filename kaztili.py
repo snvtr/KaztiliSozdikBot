@@ -33,7 +33,7 @@ def load_dict():
     with open('dict.txt', mode='r', encoding='utf-8') as f:
         for ln in f:
             ln = ln.rstrip()
-            if not ln.find('==') == 0 and ln[2:].find('==') > 0:
+            if not ln.find('==') == 0 and ln[1:].find('==') >= 0:
                 # есть слово и значение
                 items = ln.rstrip().split('==')
                 cur_word   = items[0].lower()
