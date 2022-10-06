@@ -23,7 +23,10 @@ async def help_message(msg: types.Message):
 @dp.message_handler()
 async def echo_message(msg: types.Message):
     #arguments = msg.text.rstrip().split(' ')
-    reply = lookup(msg.text.lower())
+    if '*' in msg.text:
+        reply = lookup_ext(msg.text.lower())
+    else:
+        reply = lookup(msg.text.lower())
     await bot.send_message(msg.from_user.id, reply, parse_mode=ParseMode.MARKDOWN)
 
 def load_dict():
@@ -58,6 +61,7 @@ def load_dict():
 
 
 def lookup(in_str):
+    ''' ищет слово в двух словарях, малом и большом. если в малом слово есть тоже, тогда ставится * - признак высокой частотности '''
     out_str_r = ''
     if in_str in words.keys():
         out_str_r = 'рус.: '+str(words[in_str]['meaning']).replace("'", '')+'\n'
@@ -79,6 +83,11 @@ def lookup(in_str):
     if is_mini_dict:
         ret_str += '\n\* - слово входит в 3000 самых употребимых.\n'
     return ret_str
+
+def lookup_ext(in_str):
+    ''' ищет слово по подстроке '''
+    pass
+
 
 if __name__ == '__main__':
     load_dict()
