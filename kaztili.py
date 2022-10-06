@@ -38,56 +38,54 @@ def load_dict():
             cur_word   = items[0].lower()
             tmp_array  = items[1].lower().split(',')
             cur_meaning = [i.strip() for i in tmp_array]
-            minis[cur_word] = {}
-            minis[cur_word]['meaning'] = cur_meaning
+            minis[cur_word] = cur_meaning
 
     with open('dict.txt', mode='r', encoding='utf-8') as f:
         for ln in f:
-            #if not ln.find('==') == 0 and ln[2:].find('==') > 0:
-                # есть слово и значение
             items = ln.rstrip().split('==')
             cur_word   = items[0].lower()
             tmp_array  = items[1].lower().split(',')
             cur_meaning = [i.strip() for i in tmp_array]
-            words[cur_word] = {}
-            words[cur_word]['meaning'] = cur_meaning
-            #elif ln.find('==') == 0:
-            #    # довесок к значению, отдельными строками фразы
-            #    items = ln.rstrip().split('==')
-            #    phrase    = items[1].replace('=', '').lower()
-            #    tmp_array = items[2].lower().split(',')
-            #    meaning = [i.strip() for i in tmp_array]
-            #    words[cur_word][phrase] = meaning
+            words[cur_word] = cur_meaning
 
 
 def lookup(in_str):
     ''' ищет слово в двух словарях, малом и большом. если в малом слово есть тоже, тогда ставится * - признак высокой частотности '''
     out_str_r = ''
+    out_str_k = ''
     if in_str in words.keys():
-        out_str_r = 'рус.: '+str(words[in_str]['meaning']).replace("'", '')+'\n'
+        out_str_r = 'рус.: '+str(words[in_str]).replace("'", '')+'\n'
     else:
         out_str_r = 'рус.: не найдено\n'
-    out_str_k = ''
     is_mini_dict = False
     for key in words.keys():
-        if in_str in words[key]['meaning']:
+        if in_str in words[key]:
             if key in minis.keys():
                 mini = ' \*'
                 is_mini_dict = True
             else:
                 mini = ''
-            out_str_k += 'каз.: ' + key + ' (' + str(words[key]['meaning']).replace("'", '') + ')' + mini + '\n'
+            out_str_k += 'каз.: ' + key + ' (' + str(words[key]).replace("'", '') + ')' + mini + '\n'
     if out_str_k == '':
         out_str_k = 'каз.: не найдено\n'
     ret_str = out_str_r + out_str_k
     if is_mini_dict:
-        ret_str += '\n\* - слово входит в 3000 самых употребимых.\n'
+        ret_str += '\n\* - слово входит в 3000 самых встречающихся.\n'
     return ret_str
 
 def lookup_ext(in_str):
     ''' ищет слово по подстроке '''
-    pass
-
+    matches = []
+    in_str = in_str.replace('*', '')
+    for key in words.keys():
+        if key.find(in_str) >= 0:
+            matches.append((key, words[key]))
+        #for i in words[key]:
+        #    if i.find(in_str) >= 0:
+        #        matches.append((key, words[key]))
+        #        break
+    return str(matches)
+        
 
 if __name__ == '__main__':
     load_dict()
