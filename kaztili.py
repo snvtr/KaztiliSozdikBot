@@ -7,7 +7,19 @@ from aiogram.utils.helper import Helper, HelperMode, ListItem
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.contrib.middlewares.logging import LoggingMiddleware
 
+from pprint import pprint
+
 from config import TOKEN, words, minis
+
+# TO DO:
+# - wildcard search
+# - flood control
+# - dicts reload
+# - user stats
+
+HELPMSG = 'Просто вводи слово на любом из двух языков.\n' + \
+          'Для поиска *казахского* слова по подстроке вводи часть слова со звездочкой на конце. ' + \
+          'Искать будет подстроку не только в начале слов и выведет 12 самых коротких совпадений.'
 
 logging.basicConfig(format=u'%(filename)s [ln:%(lineno)+3s]#%(levelname)+8s [%(asctime)s]  %(message)s',
                     level=logging.INFO)
@@ -16,9 +28,9 @@ bot = Bot(token=TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 dp.middleware.setup(LoggingMiddleware())
 
-@dp.message_handler(commands=['help', 'start'])
+@dp.message_handler(commands=['h', 'help', 'start'])
 async def help_message(msg: types.Message):
-    await bot.send_message(msg.from_user.id, 'Просто вводи слово на любом из двух языков.', parse_mode=ParseMode.MARKDOWN)
+    await bot.send_message(msg.from_user.id, HELPMSG, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler()
 async def echo_message(msg: types.Message):
@@ -70,21 +82,45 @@ def lookup(in_str):
         out_str_k = 'каз.: не найдено\n'
     ret_str = out_str_r + out_str_k
     if is_mini_dict:
-        ret_str += '\n\* - слово входит в 3000 самых встречающихся.\n'
-    return ret_str
+        ret_str += '\n\* - слово входит в 3000 самых встречающихся.'
+    return ret_str + '\n/h или /help - показать справку.'
 
 def lookup_ext(in_str):
     ''' ищет слово по подстроке '''
-    matches = []
+    matches = {}
+    min_len = 100
     in_str = in_str.replace('*', '')
+    for key in minis.keys():
+        if key.find(in_str) >= 0:
+            matches[key] = [len(key), minis[key]]
+            if len(key) < min_len:
+                min_len = len(key)
     for key in words.keys():
         if key.find(in_str) >= 0:
-            matches.append((key, words[key]))
-        #for i in words[key]:
-        #    if i.find(in_str) >= 0:
-        #        matches.append((key, words[key]))
-        #        break
-    return str(matches)
+            matches[key] = [len(key), words[key]]
+            if len(key) < min_len:
+                min_len = len(key)
+    #pprint(matches)            
+    if len(matches) == 0:
+        return 'каз.: не найдено'
+    elif len(matches) < 12:
+        top = len(matches)
+    else:
+        top = 12
+    i = 0
+    ret_str = ''
+    cur_len = min_len        
+    #print('min_len:', min_len, 'top:', top)
+    while i < top:
+        for k in matches.keys():
+            #print('i:', i, 'cur_len:', cur_len, 'item:', matches[k])
+            if matches[k][0] == cur_len:
+                ret_str += str(i+1) + ') ' + k.replace(in_str,'*'+in_str+'*') + ' = ' + str(matches[k][1]).replace("'", '') + '\n'
+                i += 1
+                if i == top:
+                    break
+        cur_len += 1       
+    return ret_str + '\n/h или /help - показать справку.'
         
 
 if __name__ == '__main__':
