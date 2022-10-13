@@ -12,8 +12,6 @@ from pprint import pprint
 from config import TOKEN, words, minis
 
 # TO DO:
-# - wildcard search
-# - flood control
 # - dicts reload
 # - user stats
 
@@ -49,8 +47,6 @@ async def echo_message(msg: types.Message):
 def load_dict():
     with open('mini.txt', mode='r', encoding='utf-8') as f:
         for ln in f:
-            #if not ln.find('==') == 0 and ln[2:].find('==') > 0:
-                # есть слово и значение
             items = ln.rstrip().split('==')
             cur_word   = items[0].lower()
             tmp_array  = items[1].lower().split(',')
@@ -104,8 +100,7 @@ def lookup_ext(in_str):
         if key.find(in_str) >= 0:
             matches[key] = [len(key), words[key]]
             if len(key) < min_len:
-                min_len = len(key)
-    #pprint(matches)            
+                min_len = len(key)            
     if len(matches) == 0:
         return 'каз.: не найдено'
     elif len(matches) < 12:
@@ -115,10 +110,8 @@ def lookup_ext(in_str):
     i = 0
     ret_str = ''
     cur_len = min_len        
-    #print('min_len:', min_len, 'top:', top)
     while i < top:
         for k in matches.keys():
-            #print('i:', i, 'cur_len:', cur_len, 'item:', matches[k])
             if matches[k][0] == cur_len:
                 ret_str += str(i+1) + ') ' + k.replace(in_str,'*'+in_str+'*') + ' = ' + str(matches[k][1]).replace("'", '') + '\n'
                 i += 1
