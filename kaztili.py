@@ -30,14 +30,14 @@ dp.middleware.setup(LoggingMiddleware())
 
 async def dict_throttled(*args, **kwargs):
     message = args[0]
-    await message.answer("[throttled. minimum rate is 1 message every 5 seconds]")
+    await message.answer("[throttled. maximum rate is 1 message in 15 seconds]")
 
 @dp.message_handler(commands=['h', 'help', 'start'])
 async def help_message(msg: types.Message):
     await bot.send_message(msg.from_user.id, HELPMSG, parse_mode=ParseMode.MARKDOWN)
 
 @dp.message_handler()
-@dp.throttled(dict_throttled, rate=5)
+@dp.throttled(dict_throttled, rate=15)
 async def echo_message(msg: types.Message):
     #arguments = msg.text.rstrip().split(' ')
     if '*' in msg.text:
