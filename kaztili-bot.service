@@ -6,7 +6,7 @@ Wants=multi-user.target
 [Service]
 User={{ UserName }}
 Environment=
-EnvironmentFile=/home/{{ UserName }}/KaztiliSozdikBot/.env
+EnvironmentFile=/home/{{ UserName }}/kaztili-bot.env
 ExecStart=/home/{{ UserName }}/KaztiliSozdikBot/kaztili.py
 WorkingDirectory=/home/{{ UserName }}/KaztiliSozdikBot
 Restart=always
