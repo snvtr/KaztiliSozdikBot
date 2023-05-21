@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import logging
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
