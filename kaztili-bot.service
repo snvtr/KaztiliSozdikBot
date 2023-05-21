@@ -4,11 +4,11 @@ After=multi-user.target
 Wants=multi-user.target
 
 [Service]
-User=kptdh
+User={{ UserName }}
 Environment=
-EnvironmentFile=/home/kptdh/KaztiliSozdikBot/.env
-ExecStart=/home/kptdh/KaztiliSozdikBot/kaztili.py
-WorkingDirectory=/home/kptdh/KaztiliSozdikBot
+EnvironmentFile=/home/{{ UserName }}/KaztiliSozdikBot/.env
+ExecStart=/home/{{ UserName }}/KaztiliSozdikBot/kaztili.py
+WorkingDirectory=/home/{{ UserName }}/KaztiliSozdikBot
 Restart=always
 RestartSec=10
 TimeoutStopSec=90
